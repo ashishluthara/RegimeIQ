@@ -1,3 +1,7 @@
+## 📊 Latest Regime Dashboard
+
+![NIFTY Regime Dashboard](dashboards/latest_dashboard.png)
+
 # 🧠 RegimeIQ -- NIFTY Market Regime Engine
 ### Daily Structural Market Analysis for the NIFTY Index
 
