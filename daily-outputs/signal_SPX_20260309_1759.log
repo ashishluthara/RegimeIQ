@@ -1,0 +1,348 @@
+
+====================================================================
+  MULTI-DIMENSIONAL MARKET STATE ENGINE  v2
+  Ticker: ^SPX  |  Period: 2018-01-01 → today  |  Interval: 1d
+====================================================================
+
+[L1] Data Engine...
+  Downloading ^SPX  [2018-01-01 → today]  interval=1d
+  Loaded 2,055 bars  |  2018-01-02 00:00:00  ->  2026-03-06 00:00:00
+  [TimeframeConfig] Detected: TimeframeConfig(Daily  ann=252  bpd=1.0)
+  Timeframe : Daily  |  ann_factor=252  |  bars/session=1.0
+  Features  : (2006, 27)  |  rv_win=20 days, trend_win=20/50 days
+
+[L2] Vol Axis (3-state HMM)...
+  [VolAxis] Fitting 3-state HMM on 2006 bars...
+  HMM converged @ iter 116  (logL=-4289.72)
+  [VolAxis] Transition matrix (sorted by vol):
+    Low Vol      : [0.971 0.027 0.002]
+    Medium Vol   : [0.044 0.941 0.015]
+    High Vol     : [0.    0.118 0.882]
+  {'Low Vol': 1158, 'Medium Vol': 737, 'High Vol': 111}
+
+[L3] Trend Axis...
+  [TrendAxis] Classification statistics:
+    Trending Down   : n= 412  ann_ret=-11.4%  vol=32.4%
+    Range-bound     : n= 757  ann_ret=+3.4%  vol=16.9%
+    Trending Up     : n= 837  ann_ret=+29.3%  vol=11.8%
+  {'Trending Up': 837, 'Range-bound': 757, 'Trending Down': 412}
+
+[L4] Liquidity Axis...
+  [LiqAxis] Classification statistics:
+    Thin    : n= 158  (8% of days)  ann_ret=+28.8%  vol=23.0%  avg_score=0.360
+    Normal  : n=1121  (56% of days)  ann_ret=+23.0%  vol=20.1%  avg_score=0.508
+    Thick   : n= 727  (36% of days)  ann_ret=-10.9%  vol=17.8%  avg_score=0.674
+  {'Normal': 1121, 'Thick': 727, 'Thin': 158}
+
+[L5] State Combiner...
+
+  Macro State Distribution:
+    Bull Grind          :  735 days (37%)
+    Premium Harvest     :  501 days (25%)
+    Structured Trend    :  393 days (20%)
+    Chaotic             :  233 days (12%)
+    Panic Crash         :   78 days (4%)
+    Thin Trend          :   40 days (2%)
+    Compression         :   23 days (1%)
+    Short Squeeze       :    3 days (0%)
+
+  State Statistics:
+                  Count  Pct Ann Return Ann Vol Sharpe Jump Rate Avg Duration
+State                                                                        
+Bull Grind          735  37%     +35.9%    9.3%   3.84      0.1%        13.9d
+Compression          23   1%     +85.6%   11.0%   7.77      0.0%         1.4d
+Structured Trend    393  20%      +5.7%   20.6%   0.28      0.5%         7.3d
+Premium Harvest     501  25%     -16.2%   13.8%  -1.17      1.4%         6.3d
+Thin Trend           40   2%     -59.7%   19.8%  -3.02      2.5%         1.2d
+Panic Crash          78   4%     -76.3%   62.0%  -1.23      2.6%        10.4d
+Short Squeeze         3   0%    -133.9%   32.0%  -4.19      0.0%         1.3d
+Chaotic             233  12%     +37.6%   22.3%   1.69      0.0%         3.8d
+
+  Transition Matrix:
+                  Bull Grind  Chaotic  Compression  Panic Crash  Premium Harvest  Short Squeeze  Structured Trend  Thin Trend
+Bull Grind             0.928    0.005        0.003        0.000            0.059          0.000             0.004       0.001
+Chaotic                0.000    0.674        0.013        0.004            0.223          0.000             0.073       0.013
+Compression            0.174    0.043        0.304        0.000            0.478          0.000             0.000       0.000
+Panic Crash            0.000    0.026        0.000        0.910            0.000          0.000             0.064       0.000
+Premium Harvest        0.082    0.096        0.022        0.000            0.768          0.000             0.032       0.000
+Short Squeeze          0.000    0.000        0.000        0.000            0.000          0.333             0.667       0.000
+Structured Trend       0.020    0.046        0.000        0.010            0.025          0.005             0.819       0.074
+Thin Trend             0.000    0.075        0.000        0.050            0.000          0.000             0.700       0.175
+
+[L6] Vol Models (per macro state)...
+  [Bull Grind] Fitting on 735 obs...
+    GARCH: α=0.050  γ=0.050  β=0.850  ν=8.0  persist=0.925  HL=8.9 days
+    Heston: κ=0.108  θ=0.1027  ρ=-0.080  LR_vol=508.8%
+    Jumps : λ=0.0/yr  μ_J=0.000  σ_J=0.010
+  [Compression] 23 obs → using fallback model
+  [Structured Trend] Fitting on 393 obs...
+    GARCH: α=0.050  γ=0.050  β=0.850  ν=8.0  persist=0.925  HL=8.9 days
+    Heston: κ=0.099  θ=0.2134  ρ=-0.007  LR_vol=733.3%
+    Jumps : λ=1.3/yr  μ_J=0.000  σ_J=0.010
+  [Premium Harvest] Fitting on 501 obs...
+    GARCH: α=0.050  γ=0.054  β=0.844  ν=8.0  persist=0.921  HL=8.4 days
+    Heston: κ=0.095  θ=0.1265  ρ=-0.184  LR_vol=564.7%
+    Jumps : λ=3.5/yr  μ_J=-0.026  σ_J=0.006
+  [Thin Trend] Fitting on 40 obs...
+    GARCH: α=0.050  γ=0.050  β=0.850  ν=8.0  persist=0.925  HL=8.9 days
+    Heston: κ=0.452  θ=0.2224  ρ=0.022  LR_vol=748.6%
+    Jumps : λ=6.3/yr  μ_J=0.000  σ_J=0.010
+  [Panic Crash] Fitting on 78 obs...
+    GARCH: α=0.000  γ=0.399  β=0.747  ν=50.0  persist=0.946  HL=12.5 days
+    Heston: κ=0.063  θ=0.5504  ρ=-0.134  LR_vol=1177.8%
+    Jumps : λ=6.5/yr  μ_J=0.000  σ_J=0.010
+  [Short Squeeze] 3 obs → using fallback model
+  [Chaotic] Fitting on 233 obs...
+    GARCH: α=0.021  γ=0.084  β=0.829  ν=8.0  persist=0.892  HL=6.1 days
+    Heston: κ=0.119  θ=0.2172  ρ=0.073  LR_vol=739.7%
+    Jumps : λ=1.1/yr  μ_J=0.000  σ_J=0.010
+
+[L8] Regime Hazard Model...
+
+[L8] Regime Hazard Model...
+  Baseline hazard rates (unconditional transition prob per bar):
+    Bull Grind          : 7.2%
+    Compression         : 69.6%
+    Structured Trend    : 17.8%
+    Premium Harvest     : 23.1%
+    Thin Trend          : 83.8%
+    Panic Crash         : 9.0%
+    Short Squeeze       : 66.7%
+    Chaotic             : 32.6%
+  [HazardModel] Excluded micro-states: sid=4(n=37 < 50), sid=1(n=23 < 50), sid=6(n=3 < 50)
+  [HazardModel] n=1923  AUC=0.708  Brier=0.219
+  [HazardModel] Coefficients: {'ret5_abs': np.float64(-0.283), 'vol_ratio': np.float64(-0.061), 'instability': np.float64(1.425), 'liq_inv': np.float64(-0.342), 'state_2': np.float64(1.089), 'state_3': np.float64(1.278), 'state_5': np.float64(0.161), 'state_7': np.float64(1.803)}
+  [HazardModel] AUC >= 0.62 — full overlay active.
+
+  ══════════════════════════════════════════════════════════════════════
+  BLOCK 4  --  REGIME HAZARD  (Early Warning)
+  ══════════════════════════════════════════════════════════════════════
+  [ !!!  ]  EXTREME  --  Premium Harvest  (15 bars in state)
+  ──────────────────────────────────────────────────────────────────────
+  Hazard Probability        : 69.1%
+  Baseline Rate             : 23.1%  (unconditional for this state)
+  Hazard Ratio              : 2.98x  (>1 = elevated vs baseline)
+  Excess Risk               : +45.9%
+  ──────────────────────────────────────────────────────────────────────
+  Classification            : Extreme
+  HR Thresholds             : Stable<1.2x | Elevated<1.6x | High<2.2x | Extreme>=2.2x
+  ──────────────────────────────────────────────────────────────────────
+  FEATURE PERCENTILES  (within current regime):
+    |Ret 5-session|         : 72%  
+    Vol Term Structure      : 52%  
+    HMM Instability         : 91%  << HIGH
+    Liquidity Fragility     : 38%  
+  ──────────────────────────────────────────────────────────────────────
+  POSITION OVERLAY:
+    Size Multiplier         : 25%  of normal size
+    Short Gamma OK          : NO  -- no new short gamma trades
+    Close Short Gamma       : YES -- CLOSE NOW
+  ──────────────────────────────────────────────────────────────────────
+  NOTES:
+    Hazard 69.1% vs baseline 23.1% (ratio 2.99x).
+    Drivers: HMM regime blur (instability_pct=91%).
+    Action: reduce to 25%. CLOSE existing short gamma NOW.
+    Model AUC               : 0.708
+    Model Brier             : 0.219
+  ══════════════════════════════════════════════════════════════════════
+
+[L9] Probabilistic Regime Engine...
+  Dominant regime  : Bull Grind  (confidence=0.35)
+  Entropy fragility: Extreme  (H_norm=0.828, slope=-0.0004)
+
+════════════════════════════════════════════════════════════════════════════════
+  REGIME PROBABILITY SURFACE  (last 3 bars)
+────────────────────────────────────────────────────────────────────────────────
+  Date             Bull Compression Structured  Premium     Thin    Panic    Short  Chaotic   Conf  Dominant
+────────────────────────────────────────────────────────────────────────────────
+  2026-03-04      0.353    0.069    0.119    0.175    0.035    0.068    0.009    0.173  0.353  Bull Grind
+  2026-03-05      0.353    0.064    0.133    0.179    0.026    0.069    0.005    0.170  0.353  Bull Grind
+  2026-03-06      0.351    0.062    0.139    0.186    0.025    0.071    0.003    0.162  0.351  Bull Grind
+════════════════════════════════════════════════════════════════════════════════
+
+  Regime Drift (last 10 bars):
+    Structured Trend       ▲  +0.0222
+    Bull Grind             ▼  -0.0177
+    Panic Crash            ▲  +0.0106
+    Chaotic                —  -0.0097
+    Compression            —  -0.0079
+    Thin Trend             —  +0.0055
+    Short Squeeze          —  -0.0037
+    Premium Harvest        —  +0.0006
+  Strategy dominant: Risk Off  (risk_scalar=1.00)
+
+[L7] Decision Engine v2 (prob-weighted positions)...
+  PERFORMANCE:
+Metric    Strategy Buy & Hold
+Total Ret    17.1%     143.7%
+Ann Ret       2.0%      11.2%
+Ann Vol       6.2%      19.5%
+Sharpe        0.32       0.57
+Max DD      -12.0%     -33.9%
+Calmar        0.17       0.33
+Win Rate     55.5%      54.6%
+
+  Return Attribution:
+                         Ann Ret Ann Vol Sharpe Contrib %
+Bucket                                                   
+Trend (real)               +2.3%    6.2%   0.37      114%
+Prem Harvest [SYNTHETIC]   +0.8%    0.6%   1.31       39%
+Gamma Trade  [SYNTHETIC]   +0.0%    0.0%   0.00        0%
+
+  * Prem Harvest and Gamma Trade are SYNTHETIC PROXIES.
+    IV = RV x regime_factor / sqrt(252). No real options data.
+    Valid for regime validation. Not for return forecasting.
+
+  v1 vs v3 comparison:
+          v1 (Legacy) v3 (Multi-Strat) Buy & Hold
+Total Ret       31.5%            17.1%     143.7%
+Ann Ret          3.4%             2.0%      11.2%
+Sharpe           0.42             0.32       0.57
+Max DD         -12.0%           -12.0%        n/a
+Win Rate        32.9%            55.5%      54.6%
+Avg |pos|       0.422            0.417      1.000
+Pct Flat        37.9%             6.8%         0%
+[L7] Live Signal Engine v2...
+
+  ══════════════════════════════════════════════════════════════════════
+  LIVE SIGNAL  --  06 Mar 2026  |  ^SPX
+  ══════════════════════════════════════════════════════════════════════
+  Macro State           : Premium Harvest  [Low Vol / Range-bound / Thick]
+  Spot Reference        : 6,740.02
+  Realized Vol          : 13.2%  (IV est: 15.2%  --  Fair)
+  1-SD Daily Move       : +/- 0.83%  |  Weekly: +/- 1.87%
+  5d Vol Forecast       : 12.1%
+  Trend Score           : -0.200  |  Hurst: 0.57  |  Liq: 0.64
+  Crash Risk            : 0.0%  |  Breakout: 70.0%  |  Tail: 17.2%
+  State Duration        : 15 bars in current state
+  ──────────────────────────────────────────────────────────────────────
+  DOMINANT EDGE: SELLER
+  SESSION READ : Premium Harvest: iron condor is the trade. Theta works for you all week.
+
+  ══════════════════════════════════════════════════════════════════════
+  BLOCK 1  --  FUTURES / DIRECTIONAL
+  ══════════════════════════════════════════════════════════════════════
+  Bias                  : RANGE-TRADE  (Conviction: Medium)
+  Lot Size              : 40% of max position
+  Time Horizon          : 1-3 days
+  Entry                 : Sell futures at upper range boundary, buy at lower. Size small -- this is a scalp
+  Stop Loss             : 1.60% from entry
+  Target 1              : 1.07% from entry
+  Target 2              : 2.01% from entry
+  R:R                   : 0.7:1
+  Key Level             : Range boundaries -- prior week high/low
+  Invalidation          : Range expansion > 1.5x normal daily range
+  Regime Note           : Low vol range -- futures edge is weak, options is primary strategy here
+
+  ══════════════════════════════════════════════════════════════════════
+  BLOCK 2  --  OPTION BUYER
+  ══════════════════════════════════════════════════════════════════════
+  STATUS: NO TRADE
+  REASON: Premium Harvest state: option sellers have the edge here. Buying options means paying the premium that sellers are collecting. Theta decay works against buyers in low-vol range markets
+
+  ══════════════════════════════════════════════════════════════════════
+  BLOCK 3  --  OPTION SELLER
+  ══════════════════════════════════════════════════════════════════════
+  STATUS: NO TRADE
+  REASON: VETO: Breakout risk 70% > 50%. Market is coiling. Selling premium into a compression is the fastest way to lose on an overnight gap
+  ══════════════════════════════════════════════════════════════════════
+
+
+════════════════════════════════════════════════════
+  ^SPX REGIME SNAPSHOT  |  2026-03-06
+════════════════════════════════════════════════════
+
+  Signal  : Regime fragile — exit short gamma and reduce exposure.
+
+  Regime      : Premium Harvest
+  Fragility   : 🔴 EXTREME  (2.98x)
+  Bias        : RANGE-TRADE
+  Action      : Reduce to 25% — close short gamma now
+
+  Size        : 25%
+  Short Gamma : CLOSE existing
+  Model       : AUC 0.708 — signal reliable
+════════════════════════════════════════════════════
+
+══════════════════════════════════════════════════════
+  ^SPX REGIME DASHBOARD  |  2026-03-06
+══════════════════════════════════════════════════════
+
+  Signal : Regime fragile — exit short gamma and reduce exposure.
+
+  RECENT REGIMES
+──────────────────────────────────────────────────────
+  Premium Harvest → Chaotic → Premium Harvest → Chaotic → Premium Harvest
+                                                          ↑ current
+
+  REGIME
+──────────────────────────────────────────────────────
+  State            : Premium Harvest
+  Structure        : Range-bound  |  Low Vol  |  Thick
+  State Duration   : 15 days
+  IV Regime        : Fair
+  Expected Moves   : ±0.83% (daily)  |  ±1.87% (weekly)
+
+  PROBABILITY ENGINE                🔴 Extreme
+──────────────────────────────────────────────────────
+  Bull Grind           ██████░░░░░░░░░░░░  0.351
+  Premium Harvest      ███░░░░░░░░░░░░░░░  0.186
+  Chaotic              ███░░░░░░░░░░░░░░░  0.162
+  Structured Trend     ███░░░░░░░░░░░░░░░  0.139
+  Panic Crash          █░░░░░░░░░░░░░░░░░  0.071
+  Compression          █░░░░░░░░░░░░░░░░░  0.062
+  Thin Trend           ░░░░░░░░░░░░░░░░░░  0.025
+
+  Confidence         : 0.172
+  Entropy            : 0.828
+  Dominant           : Bull Grind  0.35
+
+  Interpretation     : Regime identity unclear — high probability mass in 64% non-dominant states. Stand aside.
+
+  FRAGILITY DRIVERS
+──────────────────────────────────────────────────────
+  Momentum Shock     : 72nd percentile   Moderate  —
+  Vol Structure      : 52nd percentile   Moderate  —
+  Model Instability  : 91st percentile   Extreme   ▲▲
+  Liquidity Stress   : 38th percentile   Low       ▼
+
+  TRADING EDGE
+──────────────────────────────────────────────────────
+  Futures            : None  — stand aside
+  Options Buyer      : No trade
+  Options Seller     : No trade
+
+  Dominant Edge      : SELLER — SUSPENDED
+
+  STRATEGY ALLOCATION
+──────────────────────────────────────────────────────
+  Risk Off             ██████████░░░░░░░░░░   52%
+  Trend Systems        ████████░░░░░░░░░░░░   43%
+  Options Selling      █░░░░░░░░░░░░░░░░░░░    5%
+  Gamma Trading        ░░░░░░░░░░░░░░░░░░░░    0%
+
+  Dominant           : Risk Off
+  Risk Scalar        : 1.00
+
+  REGIME DRIFT  (10-bar)
+──────────────────────────────────────────────────────
+  Structured Trend       ▲  +0.022
+  Bull Grind             ▼  -0.018
+  Panic Crash            ▲  +0.011
+  Chaotic                ▼  -0.010
+  Compression            ▼  -0.008
+  Thin Trend             ▲  +0.005
+
+  RISK OVERLAY
+──────────────────────────────────────────────────────
+  Position Size      : 25% of normal
+  Short Gamma        : CLOSE existing
+  Re-evaluate        : Each bar — ensure short gamma closed before EOD
+  Model Quality      : AUC 0.708 — signal reliable
+══════════════════════════════════════════════════════
+[RegimeMap] Saved → SPX_regime_map.png
+
+  Dashboard → nifty_3axis_SPX_20260309_1801.png
+
+  Full output saved -> signal_SPX_20260309_1759.log
+  Done.
